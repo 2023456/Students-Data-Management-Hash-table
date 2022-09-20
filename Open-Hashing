@@ -1,0 +1,279 @@
+#include <stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <time.h>
+double cpu_time_used_find;
+double cpu_time_used_insert;
+double cpu_time_used_delete;
+double cpu_time_used_display;
+struct std_info
+{
+  //node that contain the student data
+    char std_name[50];
+    int std_id;
+    int std_birth[3];
+    int std_score;
+    struct std_info * next;
+};
+#define SIZE 26   //number of rows in the hash table
+struct std_info * chain[SIZE];  //declaring the rows of the hash table
+void init()
+{
+  //initializing the elements in the hash table with NULL
+    for(int i=0; i<SIZE ; i++)
+        chain[i]=NULL;
+}
+void insert (struct std_info new_student)
+{
+    //Calculating the time needed for insertion//
+
+  //inserting a new student in the hash table
+    struct std_info * newnode = malloc(sizeof(struct std_info));
+    newnode->next=NULL;
+    strcpy(newnode->std_name,new_student.std_name);
+    newnode->std_id=new_student.std_id;
+    newnode->std_score=new_student.std_score;
+    newnode->std_birth[0]=new_student.std_birth[0];
+    newnode->std_birth[1]=new_student.std_birth[1];
+    newnode->std_birth[2]=new_student.std_birth[2];
+    int hash_number = (toupper(new_student.std_name[0])-65)% SIZE; //hash function
+    if (chain[hash_number]==NULL)
+    {
+        chain[hash_number]=newnode;
+    }
+    else
+    {
+        newnode->next=chain[hash_number];
+        chain[hash_number]=newnode;
+    }
+}
+
+
+int find_std (char name[])
+{
+    //Calculating the time needed for Finding Student//
+      clock_t start,end;
+      start=clock();{
+  //searching for a student in the hash table with his/her name to print his/her data
+    int hash_number = (toupper(name[0])-65)% SIZE;
+    int flag=0;
+    struct std_info * temp=chain[hash_number];
+    if (temp==NULL)
+        printf("Not found\n");
+    else
+    {
+        while (temp!=NULL)
+        {
+            if (!strcmp(temp->std_name,name))
+            {
+                printf("Found -> if you want to display the data press 1 otherwise press any other number:\n");
+      int display_choice = 0;
+      scanf("%d",&display_choice);
+      if(display_choice == 1) {
+                 printf("found\n");
+                 printf("Student Name: %s",temp->std_name);
+                 printf("Student ID: %d\n",temp->std_id);
+                 printf("Student Score: %d\n",temp->std_score);
+                 printf("Student Birthday: %d\\%d\\%d\n",temp->std_birth[0],temp->std_birth[1],temp->std_birth[2]);
+                 end=clock();
+        cpu_time_used_find=((double)(end-start))/ CLOCKS_PER_SEC ;
+        printf(" * Time taken by finding function is: %lf\n",cpu_time_used_find);
+                 return hash_number;}
+                 else
+                 {
+                     end=clock();
+        cpu_time_used_find=((double)(end-start))/ CLOCKS_PER_SEC ;
+        printf(" * Time taken by finding function is: %lf\n",cpu_time_used_find);
+        return hash_number;
+                 }
+            }
+            temp=temp->next;
+            flag=1;
+        }
+        if (flag){
+        printf("Not found\n");
+        end=clock();
+        cpu_time_used_find=((double)(end-start))/ CLOCKS_PER_SEC ;
+        printf(" * Time taken by finding function is: %lf\n",cpu_time_used_find);}
+    }}
+    end=clock();
+        cpu_time_used_find=((double)(end-start))/ CLOCKS_PER_SEC ;
+        printf(" * Time taken by finding function is: %lf\n",cpu_time_used_find);
+    return -1;
+
+}
+
+void deletion(char deleted_name[])
+{
+    //Calculating the time needed for Deletion//
+      clock_t start,end;
+      start=clock();{
+  //searching for a student in the table by his/her name to delete his/her data from the table
+    int check=find_std(deleted_name); //checking if this student exist in the table or Not
+                                      //if the student exists then it return from 0 to 26
+                                      //if the student doesn't exist then it return -1
+    if(check>=0)
+    {
+        struct std_info *last=chain[check]->next;
+        struct std_info *front=chain[check];
+        while(front!=NULL)
+        {
+            //delete from the beginning of list
+            if(front==chain[check])
+            {
+            if (!strcmp(front->std_name,deleted_name))
+            {
+                chain[check]=last;
+                free(front);
+                return;
+            }
+            }
+            //delete from the middle of list
+            else
+            {
+                if (!strcmp(front->std_name,deleted_name))
+                {
+                    last->next=front->next;
+                    free(front);
+                    return;
+                }
+            }
+            last=front;
+            front=front->next;
+        }
+    }
+    else
+    {
+        printf("Not exist\n");
+    }
+}       end=clock();
+        cpu_time_used_delete=((double)(end-start))/ CLOCKS_PER_SEC ;
+        printf(" * Time taken by deletion function is: %lf\n",cpu_time_used_delete);}
+
+void display()
+{
+    //Calculating the time needed for Displaying//
+      clock_t start,end;
+
+      start=clock();{
+  //print all the content of the table
+    char name_without_enter[50];
+    for(int j=0 ; j<SIZE ; j++)
+    {
+      //for loop is to print the rows of the table
+        printf("Row[%d]: ",j+1);
+        struct std_info* temp2=chain[j];
+        while(temp2!=NULL)
+        {
+          //while loop is to print the linked list in each row in the table
+            for(int m=0; m<49 ; m++)
+            {
+              //for loop to remove '\n' from the end of the student name to make table looks good.
+              //there is '\n' at the end of the student name because we used fgets function that
+              // reads a line of characters (characters up to and including the '\n' ).
+                if(temp2->std_name[m]=='\n')
+                {name_without_enter[m]=NULL; break;}
+                else name_without_enter[m]=temp2->std_name[m];
+            }
+            printf("--> %s ",name_without_enter);
+            temp2=temp2->next;
+        }
+        printf("--> NULL\n");
+    }
+}
+end=clock();
+        cpu_time_used_display=((double)(end-start))/ CLOCKS_PER_SEC ;
+        printf(" * Time taken by displaying function is: %lf\n",cpu_time_used_display);}
+
+int main()
+{
+init();
+printf("Hello to Students Information Table\n");
+printf("The Size of the structure = %d\n\n",sizeof(struct std_info));
+
+start:
+      printf("What do you want to do\?\n");
+      printf("1-Insert a student to the table\n");
+      printf("2-Delete a student from the table\n");
+      printf("3-Find a student in the table\n");
+      printf("4-Display the content of the table\n");
+      printf("Enter the number of the operation that you want to do: ");
+      int NUM_of_operation;
+      fflush(stdin);
+      scanf("%d",&NUM_of_operation);
+
+switch(NUM_of_operation)
+{
+  case 1:
+  {
+      int no_students;
+      printf("Enter Number of students you want to insert: ");
+      scanf("%d",&no_students);
+      clock_t start,end;
+      start=clock();{
+      for(int k=0;k<no_students;k++){
+
+    //case of inserting a student data
+    struct std_info new;
+    printf("Enter student name: ");
+    fflush(stdin);
+    fgets(new.std_name,50,stdin);
+    printf("Enter student id: ");
+    scanf("%d",&new.std_id);
+    printf("Enter student birthday: \n");
+    printf("Day: ");
+    fflush(stdin);
+    scanf("%d",&new.std_birth[0]);
+    printf("Month: ");
+    fflush(stdin);
+    scanf("%d",&new.std_birth[1]);
+    printf("Year: ");
+    fflush(stdin);
+    scanf("%d",&new.std_birth[2]);
+    printf("Enter student score: ");
+    fflush(stdin);
+    scanf("%d",&new.std_score);
+    insert(new);
+    printf("\n");
+    }}
+    end=clock();
+        cpu_time_used_insert=((double)(end-start))/ CLOCKS_PER_SEC ;
+        printf(" * Time taken by insertion function is: %lf\n",cpu_time_used_insert);
+    goto start;
+    break;}
+  case 2:
+  {
+    //case of deleting a student data
+    char del_std[50];
+    printf("Enter the name of the student that you want to delete:\n");
+    fflush(stdin);
+    fgets(del_std,50,stdin);
+    deletion(del_std);
+    goto start;
+    break;}
+  case 3:
+  {
+    //case of searching for a student data
+    char std_1[50];
+    printf("Enter the name of the student that you search for:\n");
+    fflush(stdin);
+    fgets(std_1,50,stdin);
+    find_std(std_1);
+    goto start;
+    break;}
+  case 4:
+  {
+    //case of displaying the whole data in the hash table
+    display();
+    goto start;
+    break;}
+  default:
+  {
+    //case of entering any forbidden character by the user
+    printf("Its not a number of an existing operation\n");
+    goto start;
+    break;}
+}
+return 0;
+}

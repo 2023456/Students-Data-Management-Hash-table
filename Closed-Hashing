@@ -1,0 +1,432 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <time.h>
+
+struct std_info
+{
+  //node that contain the student data
+    char std_name[50];
+    int std_id;
+    int std_birth[3];
+    int std_score;
+    int check_if_full;
+};
+
+#define SIZE 15   //number of elements in the hash table
+struct std_info  Table[SIZE];  //declaring the elements of the hash table
+int No_of_elements = 0;
+
+int Hash_Function (int day, int month)
+{
+  //linear probing
+  int index_of_element = (Number_of_day_in_a_year (day,month)-1) % SIZE;
+  return index_of_element;
+}
+
+int Number_of_day_in_a_year (int day, int month)
+{
+  //computing the day into a number in the range [1,356]
+  if (month==1)
+  {
+    return day;
+  }
+  if (month==2)
+  {
+    return 31+day;
+  }
+  if (month==3)
+  {
+    return 31+28+day;
+  }
+  if (month==4)
+  {
+    return 31+28+31+day;
+  }
+  if (month==5)
+  {
+    return 31+28+31+30+day;
+  }
+  if (month==6)
+  {
+    return 31+28+31+30+31+day;
+  }
+  if (month==7)
+  {
+    return 31+28+31+30+31+30+day;
+  }
+  if (month==8)
+  {
+    return 31+28+31+30+31+30+31+day;
+  }
+  if (month==9)
+  {
+    return 31+28+31+30+31+30+31+31+day;
+  }
+  if (month==10)
+  {
+    return 31+28+31+30+31+30+31+31+30+day;
+  }
+  if (month==11)
+  {
+    return 31+28+31+30+31+30+31+31+30+31+day;
+  }
+  if (month==12)
+  {
+    return 31+28+31+30+31+30+31+31+30+31+30+day;
+  }
+}
+
+void insert (struct std_info new_student)
+{
+
+  //inserting a student in the Table
+  int index = Hash_Function(new_student.std_birth[0],new_student.std_birth[1]) ;
+  while (index < SIZE)
+  {
+      if (!Table[index].check_if_full)
+  {
+    strcpy (Table[index].std_name,new_student.std_name);
+    Table[index].std_id = new_student.std_id;
+    Table[index].std_birth[0] = new_student.std_birth[0];
+    Table[index].std_birth[1] = new_student.std_birth[1];
+    Table[index].std_birth[2] = new_student.std_birth[2];
+    Table[index].std_score = new_student.std_score;
+    Table[index].check_if_full = 1;
+    break;
+  }
+  else
+  {
+    index++;
+    if (index == SIZE)
+        index=0;
+  }
+}
+No_of_elements++;
+}
+
+
+int find_std (char name[50])
+{
+    clock_t start,end;
+      double cpu_time_used;
+      start=clock();{
+  //finding a certain student data in the table
+
+  for (int i=0; i<SIZE ; i++)
+  {
+      //printf("1\n");
+      //printf("%s\n",name);
+      //printf("%d",strcmp(Table[i].std_name,name));
+    if (!strcmp(Table[i].std_name,name))
+    {
+      printf("Found -> if you want to display the data press 1 otherwise press any other number:\n");
+      int display_choice = 0;
+      scanf("%d",&display_choice);
+      if(display_choice == 1)
+      {
+      printf("Name: %s\n",Table[i].std_name);
+      printf("Birthday: %d\\%d\\%d\n",Table[i].std_birth[0],Table[i].std_birth[1],Table[i].std_birth[2]);
+      printf("ID: %d\n",Table[i].std_id);
+      printf("Score: %d\n",Table[i].std_score);
+      end=clock();
+        cpu_time_used=((double)(end-start))/ CLOCKS_PER_SEC ;
+        printf(" * Time taken by Find Function is: %lf\n",cpu_time_used);
+      return i;
+      }
+      else
+        end=clock();
+        cpu_time_used=((double)(end-start))/ CLOCKS_PER_SEC ;
+        printf(" * Time taken by Find Function is: %lf\n",cpu_time_used);
+      return i;
+    }
+  }
+  printf("Not Found \n");
+  end=clock();
+        cpu_time_used=((double)(end-start))/ CLOCKS_PER_SEC ;
+        printf(" * Time taken by Find Function is: %lf\n",cpu_time_used);
+  return -1;
+}
+ }
+
+void deletion (char deleted_name[50])
+{
+    clock_t start,end;
+      double cpu_time_used;
+      start=clock();{
+    No_of_elements--;
+  //deleting a certain student data in the Table
+  int deleted_index = find_std (deleted_name);
+  if (deleted_index==-1)
+  {
+    printf("Not exist \n");
+    return;
+  }
+  else
+  {
+    printf("Found and deleted \n");
+    Table[deleted_index].std_name[0] = '\0';
+    Table[deleted_index].std_id = 0;
+    Table[deleted_index].std_birth[0] = 0;
+    Table[deleted_index].std_birth[1] = 0;
+    Table[deleted_index].std_birth[2] = 0;
+    Table[deleted_index].std_score = 0;
+    Table[deleted_index].check_if_full = 0;
+  }
+}
+end=clock();
+        cpu_time_used=((double)(end-start))/ CLOCKS_PER_SEC ;
+        printf(" * Time taken by Delete Function is: %lf\n",cpu_time_used); }
+
+void display ()
+{
+    clock_t start,end;
+      double cpu_time_used;
+      start=clock();{
+  for (int i=0; i<SIZE ; i++)
+  {
+
+      printf("Student %d\n",i+1);
+      printf("Name: %s\n",Table[i].std_name);
+      printf("Birthday: %d\\%d\\%d\n",Table[i].std_birth[0],Table[i].std_birth[1],Table[i].std_birth[2]);
+      printf("ID: %d\n",Table[i].std_id);
+      printf("Score: %d\n\n",Table[i].std_score);
+    }
+}
+end=clock();
+        cpu_time_used=((double)(end-start))/ CLOCKS_PER_SEC ;
+        printf(" * Time taken by Display Function is: %lf\n",cpu_time_used); }
+
+void insert_quadratic(struct std_info new_student)
+{
+
+  int index = Hash_Function(new_student.std_birth[0],new_student.std_birth[1]) ;
+  int i = 0;
+  int temp = index;
+while (1)
+  if (Table[index].check_if_full==0)
+  {
+    strcpy (Table[index].std_name,new_student.std_name);
+    Table[index].std_id = new_student.std_id;
+    Table[index].std_birth[0] = new_student.std_birth[0];
+    Table[index].std_birth[1] = new_student.std_birth[1];
+    Table[index].std_birth[2] = new_student.std_birth[2];
+    Table[index].std_score = new_student.std_score;
+    Table[index].check_if_full = 1;
+    break;
+  }
+  else
+  {
+    i++;
+    index = temp + i*i;
+    index = index % SIZE;
+  }
+  No_of_elements++;
+}
+
+int main ()
+{
+  printf("Hello!\n");
+  printf("The Size of the structure = %d\n\n",sizeof(struct std_info));
+  int Num_of_insertion = 0;
+  printf("Choose the way that you want to insert it in the table:\n1-Linear probing\n2-Qaudratic probing\n");
+  start:
+  printf("Enter 1 or 2: ");
+  fflush(stdin);
+  scanf("%d",&Num_of_insertion);
+  if (Num_of_insertion!= 1 && Num_of_insertion != 2)
+    {
+        printf ("%d is not a valid number, please enter 1 or 2\n",Num_of_insertion);
+        goto start;
+    }
+  while (1)
+  {
+    printf("1-Insert a student data in the table.\n");
+    printf("2-Delete a student data in the table.\n");
+    printf("3-Find a student data in the table.\n");
+    printf("4-Display all the content of the table.\n");
+    printf("Enter number of operation: ");
+    int Num_of_operation = 0;
+    scanf("%d",&Num_of_operation);
+    switch (Num_of_operation)
+    {
+        case 1:
+        {
+            if (Num_of_insertion == 1){
+                    clock_t start,end;
+      double cpu_time_used;
+      start=clock();{
+          //case of inserting a student data
+          if(No_of_elements==SIZE)
+          {
+              printf("Table is Full\n");
+              continue;
+          }
+          printf("Number of elements in the table is %d\n",No_of_elements);
+          struct std_info new;
+          printf("Enter student name: ");
+          fflush(stdin);
+          fgets(new.std_name,50,stdin);
+          for (int j=0 ; j<50 ; j++)
+          {
+              if(new.std_name[j] =='\n')
+              {
+                 new.std_name[j] = NULL;
+                 break;
+              }
+          }
+          printf("Enter student id: ");
+          scanf("%d",&new.std_id);
+          printf("Enter student birthday: \n");
+          printf("Day: ");
+          fflush(stdin);
+          scanf("%d",&new.std_birth[0]);
+          printf("Month: ");
+          fflush(stdin);
+          scanf("%d",&new.std_birth[1]);
+          printf("Year: ");
+          fflush(stdin);
+          scanf("%d",&new.std_birth[2]);
+          printf("Enter student score: ");
+          fflush(stdin);
+          scanf("%d",&new.std_score);
+          if (new.std_birth[1]==4 || new.std_birth[1]==6 || new.std_birth[1]==9 || new.std_birth[1]==11)
+          {
+            if (new.std_birth[0]>30 || new.std_birth[1]<=0) { printf("please enter a vaid day\n"); continue; }
+          }
+          else if (new.std_birth[1]==2)
+          {
+            if (new.std_birth[0]>28 || new.std_birth[1]<=0) { printf("please enter a vaid day\n"); continue; }
+          }
+          else if (new.std_birth[1]==1 || new.std_birth[1]==3 || new.std_birth[1]==5 || new.std_birth[1]==7 || new.std_birth[1]==8 || new.std_birth[1]==10 || new.std_birth[1]==12)
+          {
+            if (new.std_birth[0]>31 || new.std_birth[1]<=0) { printf("please enter a vaid day\n"); continue; }
+          }
+         else
+          {
+             printf("please enter a valid month\n"); continue;
+          }
+
+          insert (new);}
+          end=clock();
+        cpu_time_used=((double)(end-start))/ CLOCKS_PER_SEC ;
+        printf(" * Time taken by Insert_Linear Function is: %lf\n",cpu_time_used); }
+
+          else if (Num_of_insertion == 2){
+                clock_t start,end;
+      double cpu_time_used;
+      start=clock();{
+                if(No_of_elements==SIZE)
+          {
+              printf("Table is Full\n");
+              continue;
+          }
+          printf("Number of elements in the table is %d\n",No_of_elements);
+          struct std_info new;
+          printf("Enter student name: ");
+          fflush(stdin);
+          fgets(new.std_name,50,stdin);
+          for (int j=0 ; j<50 ; j++)
+          {
+              if(new.std_name[j] =='\n')
+              {
+                 new.std_name[j] = NULL;
+                 break;
+              }
+          }
+          printf("Enter student id: ");
+          scanf("%d",&new.std_id);
+          printf("Enter student birthday: \n");
+          printf("Day: ");
+          fflush(stdin);
+          scanf("%d",&new.std_birth[0]);
+          printf("Month: ");
+          fflush(stdin);
+          scanf("%d",&new.std_birth[1]);
+          printf("Year: ");
+          fflush(stdin);
+          scanf("%d",&new.std_birth[2]);
+          printf("Enter student score: ");
+          fflush(stdin);
+          scanf("%d",&new.std_score);
+          if (new.std_birth[1]==4 || new.std_birth[1]==6 || new.std_birth[1]==9 || new.std_birth[1]==11)
+          {
+            if (new.std_birth[0]>30 || new.std_birth[1]<=0) { printf("please enter a vaid day\n"); continue; }
+          }
+          else if (new.std_birth[1]==2)
+          {
+            if (new.std_birth[0]>28 || new.std_birth[1]<=0) { printf("please enter a vaid day\n"); continue; }
+          }
+          else if (new.std_birth[1]==1 || new.std_birth[1]==3 || new.std_birth[1]==5 || new.std_birth[1]==7 || new.std_birth[1]==8 || new.std_birth[1]==10 || new.std_birth[1]==12)
+          {
+            if (new.std_birth[0]>31 || new.std_birth[1]<=0) { printf("please enter a vaid day\n"); continue; }
+          }
+         else
+          {
+             printf("please enter a valid month\n"); continue;
+          }
+
+          insert_quadratic (new);
+          }
+          end=clock();
+        cpu_time_used=((double)(end-start))/ CLOCKS_PER_SEC ;
+         printf(" * Time taken by Insert_Quadratic Function is: %lf\n",cpu_time_used); }
+          break;
+        }
+        case 2:
+        {
+          //case of deleting a student data
+          if(No_of_elements==0)
+          {
+              printf("Table is Empty\n");
+              continue;
+          }
+          char del_std[50];
+          printf("Enter the name of the student that you want to delete:\n");
+          fflush(stdin);
+          fgets(del_std,50,stdin);
+          for (int j=0 ; j<50 ; j++)
+          {
+              if(del_std[j] =='\n')
+              {
+                 del_std[j] = NULL;
+                 break;
+              }
+          }
+          deletion (del_std);
+          break;
+        }
+        case 3:
+        {
+          //case of searching for a student data
+          char std_1[50];
+          printf("Enter the name of the student that you search for:\n");
+          fflush(stdin);
+          fgets(std_1,50,stdin);
+          for (int j=0 ; j<50 ; j++)
+          {
+              if(std_1[j] =='\n')
+              {
+                 std_1[j] = NULL;
+                 break;
+              }
+          }
+          find_std (std_1);
+          break;
+        }
+        case 4:
+        {
+          //case of displaying the whole data in the hash table
+          display();
+          break;
+        }
+        default:
+        {
+          //case of entering any forbidden character by the user
+          printf("Its not a number of an existing operation\n");
+          break;
+        }
+    }
+  }
+  return 0;
+}
